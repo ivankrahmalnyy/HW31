@@ -34,7 +34,6 @@ class User(models.Model):
     username = models.CharField(max_length=20, unique=True)
     password = models.CharField(max_length=30)
     role = models.CharField(choices=UserRoles.choices, default= 'member', max_length=12)
-    location = models.ManyToManyField(Location)
     age = models.CharField(max_length=60)
     locations = models.ManyToManyField(Location)
 
