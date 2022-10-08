@@ -1,8 +1,6 @@
 from django.db import models
 
 
-
-
 class Location(models.Model):
     name = models.CharField(max_length=100)
     lat = models.DecimalField(max_digits=8, decimal_places=6, null=True)
@@ -21,9 +19,12 @@ class UserRoles:
     ADMIN = 'admin'
     MODERATOR = 'moderator'
     choices = (
-        ("Пользователь", USER),
-        ("Админ", ADMIN),
-        ("Модератор", MODERATOR),
+        ("USER", "Пользователь"),
+        ("ADMIN", "Админ"),
+        ("MODERATOR", "Модератор")
+        # ("Пользователь", USER),
+        # ("Админ", ADMIN),
+        # ("Модератор", MODERATOR),
     )
 
 
@@ -35,6 +36,7 @@ class User(models.Model):
     role = models.CharField(choices=UserRoles.choices, default= 'member', max_length=12)
     location = models.ManyToManyField(Location)
     age = models.CharField(max_length=60)
+    locations = models.ManyToManyField(Location)
 
     class Meta:
         verbose_name = 'Пользователь'
