@@ -29,7 +29,7 @@ urlpatterns = [
     path('', root),
     path('cat/', include('ads.urls.cat_urls')),
     path('ad/', include('ads.urls.ad_urls')),
-
+    path('selection/', include("ads.urls.selection_urls")),
     path('user/', include("users.urls"))
 
 ]
@@ -39,5 +39,6 @@ urlpatterns += router.urls
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
 
+ #poetry add djangorestframework-simplejwt
 
 
