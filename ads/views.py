@@ -18,7 +18,7 @@ from rest_framework.viewsets import ModelViewSet
 from ads.models import Category, Ad, Selection
 from ads.permissions import IsOwnerSelection, IsOwnerAdOrStaff
 from ads.serializers import AdListSerializer, AdDetailSerializer, SelectionListSerializer, SelectionCreateSerializer, \
-    SelectionDetailSerializer, AdUpdateSerializer
+    SelectionDetailSerializer, AdUpdateSerializer, AdCreateSerializer
 from avito import settings
 from users.models import User
 
@@ -101,71 +101,73 @@ class AdListView(ListAPIView):
     queryset = Ad.objects.order_by("-price").all()
     serializer_class = AdListSerializer
 
-    def get(self, request, *args, **kwargs):
-        categories = request.GET.getlist('cat', [])
-        if categories:
-            self.queryset = self.queryset.filter(category_id__in=categories)
-        text = request.GET.get('text')
-        if text:
-            self.queryset = self.queryset.filter(name__icontains=text)
-        location = request.GET.get('location')
-        if location:
-            self.queryset = self.queryset.filter(author__location__name__icontains=location)
-        price_from = request.GET.get('price_from')
-        price_to = request.GET.get('price_to')
-        if price_from:
-            self.queryset = self.queryset.filter(price_gte=price_from)
-        if price_to:
-            self.queryset = self.queryset.filter(price_lte=price_from)
+    # def get(self, request, *args, **kwargs):
+    #     categories = request.GET.getlist('cat', [])
+    #     if categories:
+    #         self.queryset = self.queryset.filter(category_id__in=categories)
+    #     text = request.GET.get('text')
+    #     if text:
+    #         self.queryset = self.queryset.filter(name__icontains=text)
+    #     location = request.GET.get('location')
+    #     if location:
+    #         self.queryset = self.queryset.filter(author__location__name__icontains=location)
+    #     price_from = request.GET.get('price_from')
+    #     price_to = request.GET.get('price_to')
+    #     if price_from:
+    #         self.queryset = self.queryset.filter(price_gte=price_from)
+    #     if price_to:
+    #         self.queryset = self.queryset.filter(price_lte=price_from)
+    #
+    #     return super().get(self, *args, **kwargs)
 
-        return super().get(self, *args, **kwargs)
 
-
-@method_decorator(csrf_exempt, name='dispatch')
-class AdCreateView(CreateView):
+# @method_decorator(csrf_exempt, name='dispatch')
+# class AdCreateView(CreateView):
+#     model = Ad
+#     fields = ['name', 'author', 'price', 'description', 'is_published', 'category']
+#
+#     def get(self, request):
+#         all_ads = Ad.objects.all()
+#         result = []
+#         for ad in all_ads:
+#             result.append(
+#                 {'id': ad.id,
+#                  'name': ad.name,
+#                  'author': ad.author,
+#                  'price': ad.price,
+#                  'description': ad.description,
+#                  'is_published': ad.is_published})
+#         return JsonResponse(result, safe=False, json_dumps_params={'ensure_ascii': False})
+#
+#     def post(self, request, *args, **kwargs):
+#         data = json.loads(request.body)
+#         author = get_object_or_404(User, id=data['author_id'])
+#         category = get_object_or_404(Category, id=data['category_id'])
+#
+#         new_ad = Ad.objects.create(
+#             name=data['name'],
+#             author=author,
+#             category=category,
+#             price=data['price'],
+#             description=data['description'],
+#             is_published=data['is_published']
+#         )
+#         # new_ad.image = request.FILES.get("image")
+#         # new_ad.save()
+#
+#         return JsonResponse({"id": new_ad.id,
+#                              "name": new_ad.name,
+#                              "author": new_ad.author.username,
+#                              "price": new_ad.price,
+#                              "description": new_ad.description,
+#                              "category": new_ad.category.name,
+#                              "is_published": new_ad.is_published,
+#                              #"image": self.object.image.url
+#                              },
+#                                 safe=False, json_dumps_params={'ensure_ascii': False})
+class AdCreateView(CreateAPIView):
     model = Ad
-    fields = ['name', 'author', 'price', 'description', 'is_published', 'category']
-
-    def get(self, request):
-        all_ads = Ad.objects.all()
-        result = []
-        for ad in all_ads:
-            result.append(
-                {'id': ad.id,
-                 'name': ad.name,
-                 'author': ad.author,
-                 'price': ad.price,
-                 'description': ad.description,
-                 'is_published': ad.is_published})
-        return JsonResponse(result, safe=False, json_dumps_params={'ensure_ascii': False})
-
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        author = get_object_or_404(User, id=data['author_id'])
-        category = get_object_or_404(Category, id=data['category_id'])
-
-        new_ad = Ad.objects.create(
-            name=data['name'],
-            author=author,
-            category=category,
-            price=data['price'],
-            description=data['description'],
-            is_published=data['is_published']
-        )
-        # new_ad.image = request.FILES.get("image")
-        # new_ad.save()
-
-        return JsonResponse({"id": new_ad.id,
-                             "name": new_ad.name,
-                             "author": new_ad.author.username,
-                             "price": new_ad.price,
-                             "description": new_ad.description,
-                             "category": new_ad.category.name,
-                             "is_published": new_ad.is_published,
-                             #"image": self.object.image.url
-                             },
-                                safe=False, json_dumps_params={'ensure_ascii': False})
-
+    serializer_class = AdCreateSerializer
 
 class AdUpdateView(UpdateAPIView):
     queryset = Ad.objects.all()
